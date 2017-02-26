@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Mobile Web App HTML5 Example</title>
+</head>
+<body>
+
+  <h1 style="font-family:sans-serif;text-align:center;">Mobile Web App HTML5 Example</h1>
+
+  <span>
+    <input type="button" name="clik" value=" Click " onclick="snapshot()"><br><br>
+  </span>
+
+  <span>
+    <video autoplay="">Sorry, video not supported in this browser.</video>
+    <img src="">
+    <canvas style="display:none;"></canvas>
+  </span>
+
+  <script>
+  var errorCallback = function(e) {
+    console.log('error...', e);
+  };
+
+  var video = document.querySelector('video');
+  var canvas = document.querySelector('canvas');
+  var ctx = canvas.getContext('2d');
+  var localMediaStream = null;
+
+  function snapshot() {
+    if (localMediaStream) {
+      ctx.drawImage(video, 0, 0);
+      // "image/webp" works in Chrome.
+      // Other browsers will fall back to image/png.
+      document.querySelector('img').src = canvas.toDataURL('image/webp');
+    }
+  }
+
+  video.addEventListener('click', snapshot, false);
+
+  // TODO Not showing vendor prefixes or code that works cross-browser.
+  // TODO look at using Modernizr in future...
+  navigator.getUserMedia({video: true}, function(stream) {
+    video.src = window.URL.createObjectURL(stream);
+    localMediaStream = stream;
+  }, errorCallback);
+
+  if (!localStorage.store) {
+    localStorage.store="";
+  }
+
+  function updateStoreDisplay() {
+    document.getElementById("storeContent").innerHTML = localStorage.store;
+  }
+
+
+  </script>
+  <br><br>
+
+  To Store: <input type="text" id="store" value=""> <input type="button" name="storeButton" value=" Update " onclick="localStorage.store=document.getElementById(&#39;store&#39;).value;updateStoreDisplay()">
+  <br>
+  Storage Content: <span id="storeContent">hi</span>
+
+  <script>
+  updateStoreDisplay();
+  </script>
+
+
+  <p id="gpsnotes"></p>
+
+  <button onclick="getLocation()">Show my location coordinates!</button>
+
+  <div id="mapholder"></div>
+
+  <script>
+  var x = document.getElementById("gpsnotes");
+
+  function getLocation() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(showPosition, showError);
+    } else {
+      x.innerHTML = "Geolocation is not supported by this browser.";
+    }
+  }
+
+  function showPosition(position) {
+    //var latlon = position.coords.latitude + "," + position.coords.longitude;
+    //var img_url = "https://maps.googleapis.com/maps/api/staticmap?center="
+    //+latlon+"&zoom=14&size=400x300&sensor=false&key=AIzaSyCw6GC7W_y8gy58Q9JnYMO2WXm7TxpYWaw";
+    //document.getElementById("mapholder").innerHTML = "<img src='"+img_url+"'>";
+    document.getElementById("mapholder").innerHTML = "Latitude: " + position.coords.latitude + " Longitude: " + position.coords.longitude;
+  }
+
+  function showError(error) {
+    switch(error.code) {
+      case error.PERMISSION_DENIED:
+      x.innerHTML = "User denied the request for Geolocation."
+      break;
+      case error.POSITION_UNAVAILABLE:
+      x.innerHTML = "Location information is unavailable."
+      break;
+      case error.TIMEOUT:
+      x.innerHTML = "The request to get user location timed out."
+      break;
+      case error.UNKNOWN_ERROR:
+      x.innerHTML = "An unknown error occurred."
+      break;
+    }
+  }
+  </script>
+
+
+
+
+</body></html>
